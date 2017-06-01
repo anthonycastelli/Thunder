@@ -23,7 +23,7 @@ public extension Config {
     static var errorLog = "/var/log/supervisor/%(program_name)s-%(process_num)s.err"
     
     static var supervisordName: String? = nil
-    static var supervisordUser: String? = nil
+    static var supervisordUser: String? = "deploy:deploy"
 }
 
 class DefaultSupervisordProvider: SupervisordProvider {
