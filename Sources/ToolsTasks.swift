@@ -37,13 +37,13 @@ class DependencyInstallationTask: Task {
         try server.execute("sudo apt-get -qq install clang libicu-dev git libpython2.7 libcurl4-openssl-dev curl")
         
         print("Installing NGINX and Letsencrypt")
-        try server.execute("sudo apt-get install nginx letsencrypt")
+        try server.execute("sudo apt-get -qq install nginx letsencrypt")
         
         print("Installing Vapor and Swift")
         try server.execute("wget -q https://repo.vapor.codes/apt/keyring.gpg -O- | sudo apt-key add -")
         try server.execute("echo \"deb https://repo.vapor.codes/apt $(lsb_release -sc) main\" | sudo tee /etc/apt/sources.list.d/vapor.list")
-        try server.execute("sudo apt-get update")
-        try server.execute("sudo apt-get install swift vapor")
+        try server.execute("sudo apt-get -qq update")
+        try server.execute("sudo apt-get -qq install swift vapor")
         
         print("Testing Vapor".cyan)
         try server.execute("vapor version")
