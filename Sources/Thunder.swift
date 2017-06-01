@@ -30,6 +30,11 @@ public class Thunder {
     }
     
     public static func run() -> Never {
+        tasks += [
+            TaskSource.tools,
+            TaskSource.deploy,
+            TaskSource.vapor
+        ]
         TaskExecutor.setup(with: tasks)
         
         let commands = tasks.map { TaskCommand(task: $0) as Command }
