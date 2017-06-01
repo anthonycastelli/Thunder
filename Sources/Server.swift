@@ -6,24 +6,26 @@
 //  Copyright © 2015 jakeheis. All rights reserved.
 //
 
+#if os(Linux)
+    import Glibc
+#else
+    import Darwin
+#endif
+
 import Foundation
-import SwiftCLI
 import Rainbow
 import Spawn
-import SSH
 
 public class Servers {
     
     static var servers: [Server] = []
     
-    public static func add(ip: String, user: String, roles: [ServerRole], authMethod: SSH.AuthMethod? = nil) {
-        do {
-            let server = try Server(ip: ip, user: user, roles: roles, authMethod: authMethod)
-            servers.append(server)
-        } catch {
-            print("Couldn't connect to \(user)@\(ip)")
-            exit(1)
-        }
+    public static func add(ip: String, user: String, roles: [ServerRole], authMethod: SSHAuthMethod? = nil) {
+        servers.append(Server(ip: ip, user: user, roles: roles, authMethod: authMethod))
+    }
+    
+    public static func add(SSHHost: String, roles: [ServerRole]) {
+        servers.append(Server(SSHHost: SSHHost, roles: roles))
     }
     
     public static func add(docker container: String, roles: [ServerRole]) {
@@ -48,8 +50,12 @@ public class Server {
         return Server(commandExecutor: DummyServer(), roles: [.app, .db, .web])
     }
     
-    public convenience init(ip: String, user: String, roles: [ServerRole], authMethod: SSH.AuthMethod?) throws {
-        self.init(commandExecutor: try UserServer(ip: ip, user: user, authMethod: authMethod), roles: roles)
+    public convenience init(ip: String, user: String, roles: [ServerRole], authMethod: SSHAuthMethod?) {
+        self.init(commandExecutor: UserServer(ip: ip, user: user, authMethod: authMethod), roles: roles)
+    }
+    
+    public convenience init(SSHHost: String, roles: [ServerRole]) {
+        self.init(commandExecutor: SSHHostServer(SSHHost: SSHHost), roles: roles)
     }
     
     public convenience init(dockerContainer: String, roles: [ServerRole]) {
@@ -109,109 +115,10 @@ public class Server {
         
         Logger.logCall(call, on: commandExecutor.id)
         
-        return try commandExecutor.execute(call, capture: capture, matchers: matchers)
-    }
-    
-}
-
-extension Server: CustomStringConvertible {
-    
-    public var description: String {
-        return commandExecutor.id
-    }
-    
-}
-
-// MARK: - ServerCommandExecutor
-
-public protocol ServerCommandExecutor {
-    var id: String { get }
-    
-    func execute(_ call: String, capture: Bool, matchers: [OutputMatcher]?) throws -> String?
-}
-
-// MARK: - UserServer
-
-extension Config {
-    public static var SSHAuthMethod: SSH.AuthMethod? = nil
-}
-
-enum ServerError: Error {
-    case SSHConnectionFailed
-}
-
-public class UserServer: ServerCommandExecutor {
-    
-    public let id: String
-    let session: SSH.Session
-    
-    public init(ip: String, user: String, authMethod: SSH.AuthMethod?) throws {
-        guard let session = try? SSH.Session(host: ip) else {
-            throw ServerError.SSHConnectionFailed
-        }
-        
-        let auth: SSH.AuthMethod
-        if let authMethod = authMethod {
-            auth = authMethod
-        } else {
-            guard let method = Config.SSHAuthMethod else {
-                throw TaskError.error("You must either pass in a SSH auth method in your `Server.add` call or specify `Config.SSHAuthMethod` in your configuration file")
-            }
-            auth = method
-        }
-
-        do {
-            try session.authenticate(username: user, authMethod: auth)
-        } catch {
-            throw ServerError.SSHConnectionFailed
-        }
-        
-        // session.channel.requestPty = true
-        
-        self.id = "\(user)@\(ip)"
-        self.session = session
-    }
-    
-    public func execute(_ call: String, capture: Bool, matchers: [OutputMatcher]?) throws -> String? {
-        if capture {
-            let (status, output) = try session.capture(call)
-            guard status == 0 else {
-                print(output)
-                throw TaskError.commandFailed
-            }
-            return output
-        } else {
-            guard try session.execute(call) == 0 else {
-                throw TaskError.commandFailed
-            }
-            return nil
-        }
-    }
-    
-}
-
-// MARK: - DockerServer
-
-public class DockerServer: ServerCommandExecutor {
-    
-    public let id: String
-    
-    public init(container: String) {
-        self.id = container
-    }
-    
-    public func execute(_ call: String, capture: Bool, matchers: [OutputMatcher]?) throws -> String? {
-        let tmpFile = "/tmp/docker_call"
-        try call.write(toFile: tmpFile, atomically: true, encoding: .utf8)
-        
-        let copyTask = Process()
-        copyTask.launchPath = "/usr/local/bin/docker"
-        copyTask.arguments = ["cp", tmpFile, "\(id):\(tmpFile)"]
-        copyTask.launch()
-        copyTask.waitUntilExit()
+        let arguments = try commandExecutor.createArguments(for: call)
         
         var captured = ""
-        let spawned = try Spawn(args: ["/usr/local/bin/docker", "exec", id, "bash", tmpFile], output: { (output) in
+        let spawned = try Spawn(args: arguments, output: { (output) in
             if capture {
                 captured += output
             } else {
@@ -230,12 +137,120 @@ public class DockerServer: ServerCommandExecutor {
     
 }
 
+extension Server: CustomStringConvertible {
+    
+    public var description: String {
+        return commandExecutor.id
+    }
+    
+}
+
+// MARK: - ServerCommandExecutor
+
+public protocol ServerCommandExecutor {
+    var id: String { get }
+    
+    func createArguments(for call: String) throws -> [String]
+}
+
+// MARK: - UserServer
+
+public enum SSHAuthMethod {
+    case key(String)
+    // case password(String) TODO
+}
+
+extension Config {
+    public static var SSHAuthMethod: SSHAuthMethod? = nil
+}
+
+public class UserServer: ServerCommandExecutor {
+    
+    public var id: String {
+        return "\(user)@\(ip)"
+    }
+    
+    public let ip: String
+    public let user: String
+    public let authMethod: SSHAuthMethod?
+    
+    public init(ip: String, user: String, authMethod: SSHAuthMethod?) {
+        self.ip = ip
+        self.user = user
+        self.authMethod = authMethod
+    }
+    
+    public func createArguments(for call: String) throws -> [String] {
+        var args = ["/usr/bin/ssh", "-l", user]
+        
+        let auth: SSHAuthMethod
+        if let authMethod = authMethod {
+            auth = authMethod
+        } else {
+            guard let method = Config.SSHAuthMethod else {
+                throw TaskError.error("You must either pass in a SSH auth method in your `Server.add` call or specify `Config.SSHAuthMethod` in your configuration file")
+            }
+            auth = method
+        }
+        
+        switch auth {
+        case let .key(key): args += ["-i" , key]
+        }
+        
+        args += [ip, call]
+        
+        return args
+    }
+    
+}
+
+// MARK: - SSHHostServer
+
+public class SSHHostServer: ServerCommandExecutor {
+    
+    public let id: String
+    
+    public init(SSHHost: String) {
+        self.id = SSHHost
+    }
+    
+    public func createArguments(for call: String) throws -> [String] {
+        return ["/usr/bin/ssh", id, "\(call)"]
+    }
+    
+}
+
+// MARK: - DockerServer
+
+public class DockerServer: ServerCommandExecutor {
+    
+    public let id: String
+    
+    public init(container: String) {
+        self.id = container
+    }
+    
+    public func createArguments(for call: String) throws -> [String] {
+        let tmpFile = "/tmp/docker_call"
+        try call.write(toFile: tmpFile, atomically: true, encoding: .utf8)
+        
+        let copyTask = Process()
+        copyTask.launchPath = "/usr/bin/env"
+        copyTask.arguments = ["docker", "cp", tmpFile, "\(id):\(tmpFile)"]
+        copyTask.launch()
+        copyTask.waitUntilExit()
+        
+        return ["/usr/bin/env", "docker", "exec", id, "bash", tmpFile]
+    }
+    
+}
+
 public class DummyServer: ServerCommandExecutor {
     
     public let id = "DummyServer"
     
-    public func execute(_ call: String, capture: Bool, matchers: [OutputMatcher]?) throws -> String? {
-        return nil
+    public func createArguments(for call: String) throws -> [String] {
+        return ["#"]
     }
     
 }
