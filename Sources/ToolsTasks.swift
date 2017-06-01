@@ -47,8 +47,22 @@ class DependencyInstallationTask: Task {
         print("Testing Vapor".cyan)
         try server.execute("vapor version")
         
+        print("Depending on your database setup, you may need to install the MySQL or PostgresQL libraries.".green)
+        print("Don't forget to update your nginx sites (/etc/nginx/sites-enabled/default)".green)
+        print("After generating an SSL certificate, make sure you setup ssl support for nginx.".green)
+        try invoke("tools:account")
+    }
+}
+
+class DeployAccountTask: Task {
+    let name = "acount"
+    let namespace = tools
+    
+    func run(on server: Server) throws {
+        
         print("Setting up deploy account".cyan)
-        try server.execute("sudo adduser --disabled-password --gecos \"\" deploy sudo")
+        try server.execute("sudo adduser --disabled-password --gecos \"\" deploy")
+        try server.execute("sudo adduser deploy sudo")
         try server.execute("sudo mkdir /home/deploy/.ssh")
         try server.execute("sudo chmod 700 /home/deploy/.ssh")
         try server.execute("sudo touch /home/deploy/.ssh/authorized_keys")
@@ -62,9 +76,6 @@ class DependencyInstallationTask: Task {
         try server.execute("sudo mkdir /home/deploy/www/letsencrypt/.well-known/acme-challenge")
         try server.execute("sudo chown deploy:deploy /home/deploy/www/letsencrypt/.well-known/acme-challenge -R")
         
-        print("Depending on your database setup, you may need to install the MySQL or PostgresQL libraries.".green)
-        print("Don't forget to update your nginx sites (/etc/nginx/sites-enabled/default)".green)
-        print("After generating an SSL certificate, make sure you setup ssl support for nginx.".green)
         print("And one last final thing. The deploy account is setup passwordless, so before you can deploy your Vapor app, you'll have to add your ssh key to '/home/deploy/.ssh/authorized_keys'. Make sure you do that through the root account.".green)
     }
 }
