@@ -11,7 +11,8 @@ import Rainbow
 public extension TaskSource {
     static let tools = TaskSource(tasks:  [
         ToolsTask(),
-        DependencyInstallationTask()
+        DependencyInstallationTask(),
+        DeployAccountTask()
     ])
 }
 
