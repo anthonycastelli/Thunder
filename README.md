@@ -8,7 +8,7 @@ $ thunder deploy
 ```
 Thunder will clone your project onto your server(s), build it, and start the application (and do anything else you want it to do). 
 
-Originally forked off of [Flock]https://github.com/jakeheis/Flock).
+Originally forked off of [Flock](https://github.com/jakeheis/Flock).
 
 Table of Contents
 =================
