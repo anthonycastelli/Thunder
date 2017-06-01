@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import Flock
+@testable import Thunder
 
 var testServer: Server? = {
     guard let containerId = try? String(contentsOfFile: ".test-docker-id") else {
@@ -16,7 +16,7 @@ var testServer: Server? = {
     return Server(dockerContainer: containerId.trimmingCharacters(in: .whitespacesAndNewlines), roles: [.app, .db, .web])
 }()
 
-class FlockTestCase: XCTestCase {
+class ThunderTestCase: XCTestCase {
     
     override func tearDown() {
         TestTaskMonitor.reset()
