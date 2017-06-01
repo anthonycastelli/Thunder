@@ -56,14 +56,13 @@ class DependencyInstallationTask: Task {
 }
 
 class DeployAccountTask: Task {
-    let name = "acount"
+    let name = "account"
     let namespace = tools
     
     func run(on server: Server) throws {
         
         print("Setting up deploy account".cyan)
         try server.execute("sudo adduser --disabled-password --gecos \"\" deploy")
-//        try server.execute("sudo adduser deploy sudo")
         try server.execute("sudo mkdir /home/deploy/.ssh")
         try server.execute("sudo chmod 700 /home/deploy/.ssh")
         try server.execute("sudo touch /home/deploy/.ssh/authorized_keys")
@@ -74,6 +73,10 @@ class DeployAccountTask: Task {
         try server.execute("sudo chown deploy:deploy /home/deploy/www -R")
         try server.execute("sudo mkdir /home/deploy/logs")
         try server.execute("sudo chown deploy:deploy /home/deploy/logs -R")
+        try server.execute("sudo mkdir /home/deploy/www/letsencrypt")
+        try server.execute("sudo chown deploy:deploy /home/deploy/www/letsencrypt -R")
+        try server.execute("sudo mkdir /home/deploy/www/letsencrypt/.well-known")
+        try server.execute("sudo chown deploy:deploy /home/deploy/www/letsencrypt/.well-known -R")
         try server.execute("sudo mkdir /home/deploy/www/letsencrypt/.well-known/acme-challenge")
         try server.execute("sudo chown deploy:deploy /home/deploy/www/letsencrypt/.well-known/acme-challenge -R")
         
