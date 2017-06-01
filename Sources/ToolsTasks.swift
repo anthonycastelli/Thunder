@@ -62,7 +62,7 @@ class DeployAccountTask: Task {
         
         print("Setting up deploy account".cyan)
         try server.execute("sudo adduser --disabled-password --gecos \"\" deploy")
-        try server.execute("sudo adduser deploy sudo")
+//        try server.execute("sudo adduser deploy sudo")
         try server.execute("sudo mkdir /home/deploy/.ssh")
         try server.execute("sudo chmod 700 /home/deploy/.ssh")
         try server.execute("sudo touch /home/deploy/.ssh/authorized_keys")
