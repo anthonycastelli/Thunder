@@ -30,7 +30,7 @@ Table of Contents
 # Installation
 ### Homebrew
 ```bash
-brew install anthonycastelli/repo/thunder
+~brew install anthonycastelli/repo/thunder~
 ```
 ### Manual
 ```bash
