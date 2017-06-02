@@ -177,7 +177,7 @@ class WriteConfTask: SupervisordTask {
         }
         
         var supervisor = provider.confFile(for: server)
-        supervisor.enviromentVariables = Config.environmentVariables
+        supervisor.environmentVariables = Config.environmentVariables
         try server.executeWithOutputMatchers("echo \"\(supervisor.toString())\" > \(provider.confFilePath)", matchers: [persmissionsMatcher])
         
         try executeSupervisorctl(command: "reread", on: server)
