@@ -173,9 +173,12 @@ class WriteConfTask: SupervisordTask {
         }
         
         let persmissionsMatcher = OutputMatcher(regex: "Permission denied") { (match) in
-            print("Make sure this user has write access to \(self.provider.confFilePath) -- see https://github.com/jakeheis/Flock#permissions".yellow)
+            print("Make sure this user has write access to \(self.provider.confFilePath) -- see https://github.com/anthonycastelli/Thunder#permissions".yellow)
         }
-        try server.executeWithOutputMatchers("echo \"\(provider.confFile(for: server).toString())\" > \(provider.confFilePath)", matchers: [persmissionsMatcher])
+        
+        var supervisor = provider.confFile(for: server)
+        supervisor.enviromentVariables = Config.enviromentVariables
+        try server.executeWithOutputMatchers("echo \"\(supervisor.toString())\" > \(provider.confFilePath)", matchers: [persmissionsMatcher])
         
         try executeSupervisorctl(command: "reread", on: server)
         try executeSupervisorctl(command: "update", on: server)
