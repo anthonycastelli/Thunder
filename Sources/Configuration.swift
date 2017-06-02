@@ -42,5 +42,5 @@ public struct Config {}
 
 public extension Config {
     internal(set) static var environment = ""
-    public static var enviromentVariables: [String : String]? = nil
+    public static var environmentVariables: [String : String]? = nil
 }

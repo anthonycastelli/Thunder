@@ -62,7 +62,7 @@ public struct SupervisordConfFile {
     public var stdoutLogfile = Config.outputLog
     public var stderrLogfile = Config.errorLog
     
-    public var enviromentVariables: [String : String]?
+    public var environmentVariables: [String : String]?
     
     private var extraLines: [String] = []
     
@@ -86,8 +86,8 @@ public struct SupervisordConfFile {
             "stderr_logfile=\(stderrLogfile)"
         ] + extraLines + [""]
         
-        if let enviromentVariables = enviromentVariables {
-            let variables = enviromentVariables.map({ "\($0.key)=\($0.value)" }).joined(separator: ",")
+        if let environmentVariables = environmentVariables {
+            let variables = environmentVariables.map({ "\($0.key)=\($0.value)" }).joined(separator: ",")
             config.insert("environment=\(variables)", at: 3)
         }
         return config.joined(separator: "\n")
@@ -177,7 +177,7 @@ class WriteConfTask: SupervisordTask {
         }
         
         var supervisor = provider.confFile(for: server)
-        supervisor.enviromentVariables = Config.enviromentVariables
+        supervisor.enviromentVariables = Config.environmentVariables
         try server.executeWithOutputMatchers("echo \"\(supervisor.toString())\" > \(provider.confFilePath)", matchers: [persmissionsMatcher])
         
         try executeSupervisorctl(command: "reread", on: server)
