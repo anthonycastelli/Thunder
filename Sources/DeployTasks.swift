@@ -19,7 +19,7 @@ public extension TaskSource {
 
 public extension Config {
     static var projectName = "" // Must be supplied
-    static var executableName = "" // Must be supplied
+    static var executableName = "Run" // Default is Run for Vapor 2
     static var repoURL = "" // Must be supplied
     static var deployDirectory = "/home/deploy/www"
 }
