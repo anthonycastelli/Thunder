@@ -36,8 +36,14 @@ class DependencyInstallationTask: Task {
         try server.execute("sudo apt-get -qq update")
         try server.execute("sudo apt-get -qq install clang libicu-dev git libpython2.7 libcurl4-openssl-dev curl")
         
-        print("Installing NGINX and Letsencrypt")
-        try server.execute("sudo apt-get -qq install nginx letsencrypt")
+        print("Installing NGINX")
+        try server.execute("sudo apt-get -qq install nginx")
+        
+        print("Installing Letsencrypt (Certbot)")
+        try server.execute("sudo apt-get -qq install software-properties-common")
+        try server.execute("sudo add-apt-repository ppa:certbot/certbot")
+        try server.execute("sudo apt-get -qq update")
+        try server.execute("sudo apt-get -qq install certbot")
         
         print("Installing Vapor and Swift")
         try server.execute("wget -q https://repo.vapor.codes/apt/keyring.gpg -O- | sudo apt-key add -")
