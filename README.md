@@ -242,6 +242,8 @@ Don't forget to setup your vapor NGINX config file. A good example is [The Vapor
 ### SSL (LetsEncrypt)
 Here is a nice getting started setup for SSL certificates via LetsEncrypt [GitHub Gist](https://gist.github.com/cecilemuller/a26737699a7e70a7093d4dc115915de8)
 
+Don't forget your `sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096`
+
 If you use LetsEncrypt, you'll want to setup some sort of renewal script. 
 
 1. Edit your crontab: \"sudo crontab -e\" (This must be done on the root account. EC2 Instance is ubuntu via the certificate from AWS)
@@ -249,6 +251,6 @@ If you use LetsEncrypt, you'll want to setup some sort of renewal script.
 
 ```bash
 # Lets Encrypt SSL Renewal every Monday at 2:30 AM
-30 2 * * 1 sudo letsencrypt renew >> /home/deploy/logs/le-renew.log
-35 2 * * 1 sudo service nginx reload
+30 2 * * 1 sudo certbot renew --noninteractive --renew-hook >> /home/deploy/logs/le-renew.log
+35 2 * * 1 sudo systemctl reload nginx
 ``` 
