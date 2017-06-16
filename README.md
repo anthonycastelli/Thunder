@@ -28,16 +28,16 @@ Table of Contents
    * [Related projects](#related-projects)
 
 # Installation
-### Homebrew
+### Homebrew (Coming Soon)
 ```bash
-~brew install anthonycastelli/repo/thunder~
+brew install anthonycastelli/repo/thunder
 ```
 ### Manual
 ```bash
 git clone https://github.com/anthonycastelli/ThunderCLI
 cd ThunderCLI
 swift build -c release
-ln -s .build/release/ThunderCLI /usr/bin/local/thunder
+ln -s .build/release/ThunderCLI /usr/local/bin/thunder
 ```
 If the symlink doesnt work, get the full path of the current working directory using `pwd`
 
