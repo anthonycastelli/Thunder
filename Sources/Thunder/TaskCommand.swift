@@ -29,9 +29,9 @@ class TaskCommand: Command {
         do {
             try TaskExecutor.run(task: task)
         } catch TaskError.commandFailed {
-            throw CLIError.error("A command failed.".red)
+            throw CLI.Error(message: "A command failed.".red)
         } catch TaskError.error(let string) {
-            throw CLIError.error(string.red)
+            throw CLI.Error(message: string.red)
         } catch let error {
             throw error
         }

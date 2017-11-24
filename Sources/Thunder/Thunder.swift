@@ -38,17 +38,22 @@ public class Thunder {
         
         let commands = tasks.map { TaskCommand(task: $0) as Command }
         
-        CLI.setup(name: "Thunder", version: "1.0.0", description: "Thunder: Automated deployment of your Vapor app")
+        let cli = CLI(
+            name: "Thunder",
+            version: "1.1.0",
+            description: "Thunder: Automated deployment of your Vapor app"
+        )
         
-        CLI.register(commands: commands)
+        cli.commands = commands
         
-        CLI.helpCommand = HelpCommand()
-        CLI.versionCommand = VersionCommand()
+//        cli.helpCommand = HelpCommand()
+//        cli.versionCommand = VersionCommand()
         
-        CommandAliaser.alias(from: "-h", to: CLI.helpCommand.name)
-        CommandAliaser.alias(from: "-v", to: CLI.versionCommand.name)
+//        CommandAliaser.alias(from: "-h", to: <#T##String#>)
+//        CommandAliaser.alias(from: "-h", to: CLI.helpCommand.name)
+//        CommandAliaser.alias(from: "-v", to: CLI.versionCommand?.name)
         
-        let result = CLI.go()
+        let result = cli.go()
         exit(result)
     }
     

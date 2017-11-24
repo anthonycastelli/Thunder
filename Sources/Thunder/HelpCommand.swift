@@ -8,7 +8,7 @@
 
 import SwiftCLI
 
-class HelpCommand: SwiftCLI.HelpCommand {
+class HelpCommand: Command {
     
     let name = "--help"
     let shortDescription = "Prints help information"
@@ -34,7 +34,7 @@ class HelpCommand: SwiftCLI.HelpCommand {
     }
     
     func printOption(_ option: String, description: String) {
-        let spacing = String(repeating: " ", count: 15 - option.characters.count)
+        let spacing = String(repeating: " ", count: 15 - option.count)
         print("\(option)\(spacing)\(description)")
     }
     

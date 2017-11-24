@@ -1,13 +1,19 @@
+// swift-tools-version:4.0
+
 import PackageDescription
 
 let package = Package(
     name: "Thunder",
-    dependencies: [
-        .Package(url: "https://github.com/jakeheis/SwiftCLI", majorVersion: 3),
-        .Package(url: "https://github.com/onevcat/Rainbow", majorVersion: 2),
-        .Package(url: "https://github.com/jakeheis/Spawn", majorVersion: 0),
+    products: [
+        .library(name: "Thunder", targets: ["Thunder"]),
     ],
-    exclude: [
-        "Tests/TestProject"
+    dependencies: [
+        .package(url: "https://github.com/jakeheis/SwiftCLI", from: "4.0.0"),
+        .package(url: "https://github.com/onevcat/Rainbow", from: "3.0.0"),
+        .package(url: "https://github.com/jakeheis/Spawn", from: "0.0.6"),
+    ],
+    targets: [
+        .target(name: "Thunder", dependencies: ["Rainbow", "SwiftCLI", "Spawn"]),
+        .testTarget(name: "ThunderTests", dependencies: ["Thunder"]),
     ]
 )

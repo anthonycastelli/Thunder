@@ -1,0 +1,34 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Rainbow",
+        "repositoryURL": "https://github.com/onevcat/Rainbow",
+        "state": {
+          "branch": null,
+          "revision": "dfe579abc72347618e0ffde4faa36fa085c5f3bc",
+          "version": "3.0.0"
+        }
+      },
+      {
+        "package": "Spawn",
+        "repositoryURL": "https://github.com/jakeheis/Spawn",
+        "state": {
+          "branch": null,
+          "revision": "737435e81917f9120552b04164293b66520ade77",
+          "version": "0.0.6"
+        }
+      },
+      {
+        "package": "SwiftCLI",
+        "repositoryURL": "https://github.com/jakeheis/SwiftCLI",
+        "state": {
+          "branch": null,
+          "revision": "afd7cd100aa18e1ad878279f506fbff71b59ed91",
+          "version": "4.0.3"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
