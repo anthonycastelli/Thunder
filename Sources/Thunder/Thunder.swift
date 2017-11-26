@@ -45,6 +45,7 @@ public class Thunder {
         )
         
         cli.commands = commands
+        cli.commands.append(HelpCommand())
         
 //        cli.helpCommand = HelpCommand()
 //        cli.versionCommand = VersionCommand()
