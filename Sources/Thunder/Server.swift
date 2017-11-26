@@ -271,7 +271,7 @@ public struct OutputMatcher {
         guard let regex = regex else {
             return
         }
-        if regex.numberOfMatches(in: output, options: [], range: NSRange(location: 0, length: output.characters.count)) > 0 {
+        if regex.numberOfMatches(in: output, options: [], range: NSRange(location: 0, length: output.count)) > 0 {
             onMatch(output)
         }
     }
