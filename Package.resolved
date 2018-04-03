@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/onevcat/Rainbow",
         "state": {
           "branch": null,
-          "revision": "5d5e3d3facd3a46edc260c383f15261b07abcf98",
-          "version": "3.0.1"
+          "revision": "f69961599ad524251d677fbec9e4bac57385d6fc",
+          "version": "3.1.1"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/jakeheis/SwiftCLI",
         "state": {
           "branch": null,
-          "revision": "afd7cd100aa18e1ad878279f506fbff71b59ed91",
-          "version": "4.0.3"
+          "revision": "740b496012f922218f4b901237e39c7ac98f92f6",
+          "version": "4.1.2"
         }
       }
     ]
