@@ -6,7 +6,7 @@ Automated 1-click deployment of Swift projects to servers. Once set up, deployin
 ```
 $ thunder deploy
 ```
-Thunder will clone your project onto your server(s), build it, and start the application (and do anything else you want it to do). 
+Thunder will clone your project onto your server(s), build it, and start the application (and do anything else you want it to do).
 
 Originally forked off of [Flock](https://github.com/jakeheis/Flock).
 
@@ -39,7 +39,18 @@ cd ThunderCLI
 swift build -c release
 ln -s .build/release/ThunderCLI /usr/local/bin/thunder
 ```
-If the symlink doesnt work, get the full path of the current working directory using `pwd`
+or if you're using **OSX High Sierra** replace:
+```bash
+ln -s .build/release/ThunderCLI /usr/local/bin/thunder
+```
+with:
+```bash
+ln -s /Users/Anthony/ThunderCLI/.build/x86_64-apple-macosx10.10/release/ThunderCLI /usr/local/bin/thunder
+```
+
+**Notes:**
+1. If the symlink doesnt work, get the full path of the current working directory using `pwd`
+2. The `.` in the path is required. Swift build's into an invisible folder
 
 # Setup
 ## Init
@@ -50,10 +61,10 @@ thunder --init
 After this command completes, you should follow the instructions Thunder prints. Following these instructions should be enough to get your project up and running. For more information about the files Flock creates, read on.
 
 ### Thunderfile
-The Flockfile specifies which tasks and configurations you want Flock to use. 
+The Flockfile specifies which tasks and configurations you want Flock to use.
 `Thunder.Deploy` includes the following tasks:
 ```bash
-thunder deploy          # Invokes deploy:git, deploy:build, and deploy:link 
+thunder deploy          # Invokes deploy:git, deploy:build, and deploy:link
 thunder deploy:git      # Clones your project onto your server into a timestamped directory
 thunder deploy:build    # Builds your project
 thunder deploy:link     # Links your newly built project directory as the current directory
@@ -66,8 +77,8 @@ Running `thunder deploy` will:
 
 `FThunder.Tools` includes tasks which assist in installing the necessary tools for your swift project to run on the server:
 ```bash
-thunder tools                 # Invokes tools:dependencies, tools:swift       
-thunder tools:dependencies    # Installs dependencies necessary for 
+thunder tools                 # Invokes tools:dependencies, tools:swift
+thunder tools:dependencies    # Installs dependencies necessary for
 thunder tools:account       # Will setup the deploy account
 ```
 
@@ -101,7 +112,7 @@ func configure() {
       // For project-wide auth:
       Config.SSHAuthMethod = .key("/path/to/my/key")
       Servers.add(ip: "9.9.9.9", user: "deploy", roles: [.app, .db, .web])
-      
+
       // For server-specific auth:
       Servers.add(ip: "9.9.9.9", user: "deploy", roles: [.app, .db, .web], authMethod: .key("/path/to/another/key"))
 
@@ -206,7 +217,7 @@ class MigrateTask: Task {
    let name = "migrate"
    let namespace = "db"
    let hookTimes: [HookTime] = [.after("deploy:build")]
-   
+
    func run(on server: Server) throws {
       // Do work
    }
@@ -244,7 +255,7 @@ Here is a nice getting started setup for SSL certificates via LetsEncrypt [GitHu
 
 Don't forget your `sudo openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096`
 
-If you use LetsEncrypt, you'll want to setup some sort of renewal script. 
+If you use LetsEncrypt, you'll want to setup some sort of renewal script.
 
 1. Edit your crontab: \"sudo crontab -e\" (This must be done on the root account. EC2 Instance is ubuntu via the certificate from AWS)
 2. Add this to your crontab
@@ -253,4 +264,4 @@ If you use LetsEncrypt, you'll want to setup some sort of renewal script.
 # Lets Encrypt SSL Renewal every Monday at 2:30 AM
 30 2 * * 1 sudo certbot renew --noninteractive --renew-hook >> /home/deploy/logs/le-renew.log
 35 2 * * 1 sudo systemctl reload nginx
-``` 
+```
